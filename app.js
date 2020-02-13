@@ -212,8 +212,6 @@ app.get("/grade", (req, res) => {
   res.send("F");
 });
 
-app.get("/books", (req, res) => {});
-
 app.listen(8000, () => {
   console.log("Express server is running at http://localhost:8000");
 });
