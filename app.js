@@ -209,6 +209,10 @@ app.get("/grade", (req, res) => {
     return res.send("C");
   }
 
+  if (numericMark >= 60) {
+    return res.send("D");
+  }
+
   res.send("F");
 });
 
