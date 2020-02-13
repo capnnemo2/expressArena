@@ -95,7 +95,72 @@ app.get("/cipher", (req, res) => {
   res.send(encryptedMessage);
 });
 
-app.get("/lotto", (req, res) => {});
+app.get("/lotto", (req, res) => {
+  let requiredFields = ["arr"];
+  requiredFields.forEach(field => {
+    if (!req.query[field]) {
+      res.status(400).send(`${field} is a required query parameter`);
+    }
+  });
+
+  let { arr } = req.query;
+
+  if (!Array.isArray(arr)) {
+    return res
+      .status(400)
+      .send(
+        "This is not an array. You must enter multiple parameters with the key 'arr'"
+      );
+  }
+
+  guessNumbers = arr
+    .map(n => parseInt(n))
+    .filter(n => !Number.isNaN(n) && n >= 1 && n <= 20);
+
+  if (guessNumbers.length !== 6) {
+    return res
+      .status(400)
+      .send(
+        "You must have 6 paramters with the key 'arr' that are between 1 and 20"
+      );
+  }
+
+  console.log(guessNumbers);
+
+  const stockNumbers = Array(20)
+    .fill(1)
+    .map((_, i) => i + 1);
+
+  const winningNumbers = [];
+  for (let i = 0; i < 6; i++) {
+    const ran = Math.floor(Math.random() * stockNumbers.length);
+    winningNumbers.push(stockNumbers[ran]);
+    stockNumbers.splice(ran, 1);
+  }
+  console.log(winningNumbers);
+
+  let diff = winningNumbers.filter(n => guessNumbers.includes(n));
+  console.log(diff);
+
+  let responseText;
+
+  switch (diff.length) {
+    case 6:
+      responseText =
+        "Amazing! You got all six numbers correct! This has never happened before!";
+      break;
+    case 5:
+      responseText = "Holy smokes! You got five out of six numbers correct!";
+      break;
+    case 4:
+      responseText = "You only missed two numbers!";
+      break;
+    default:
+      responseText = "You got less than four numbers correct. You lose.";
+  }
+
+  res.send(responseText);
+});
 
 app.listen(8000, () => {
   console.log("Express server is running at http://localhost:8000");
